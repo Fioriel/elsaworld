@@ -212,9 +212,10 @@ function SoundToggle({ t }: { t: Copy }) {
     const audio = audioRef.current
     if (!audio) return
     audio.loop = true
-    audio.volume = 0.45
+    audio.volume = 0.35
 
     const start = () => {
+      audio.volume = 0.35
       audio.muted = false
       return audio
         .play()
@@ -248,6 +249,7 @@ function SoundToggle({ t }: { t: Copy }) {
     const audio = audioRef.current
     if (!audio) return
     if (muted) {
+      audio.volume = 0.35
       audio.muted = false
       void audio.play().then(() => setMuted(false)).catch(() => setMuted(true))
       return
@@ -262,7 +264,7 @@ function SoundToggle({ t }: { t: Copy }) {
     <>
       <audio
         ref={audioRef}
-        src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/audio/i-want-it-that-way.mp3`}
+        src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/audio/i-want-it-that-way-2.mp3`}
         preload="auto"
         loop
       />
