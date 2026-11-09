@@ -1,8 +1,8 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronRight, Heart, Mail, MapPin, Sparkles } from 'lucide-react'
-import { useEffect, useState, type ReactNode } from 'react'
+import { ChevronRight, Heart, Mail, MapPin, Sparkles, Volume2, VolumeX } from 'lucide-react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 type Lang = 'en' | 'fr'
 
@@ -40,6 +40,8 @@ const copy = {
     last: 'One Last Thing',
     like: 'I like you.',
     appreciation: 'No expectations, just a little appreciation.',
+    mute: 'Mute',
+    unmute: 'Unmute',
     signature: 'for elsa',
     locale: 'en-US',
     letter: `My Dear Elsa,
@@ -97,6 +99,8 @@ And I'm glad I found you that day. ❤️
     last: 'Une dernière chose',
     like: 'Je t’aime bien.',
     appreciation: 'Sans attentes, juste pour te montrer que j’apprécie.',
+    mute: 'Couper le son',
+    unmute: 'Activer le son',
     signature: 'pour elsa',
     locale: 'fr-FR',
     letter: `Ma chère Elsa,
@@ -197,6 +201,84 @@ function LanguageSwitch({ lang, onChange }: { lang: Lang; onChange: (lang: Lang)
         </div>
       </div>
     </motion.div>
+  )
+}
+
+function SoundToggle({ t }: { t: Copy }) {
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const [muted, setMuted] = useState(true)
+
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+    audio.loop = true
+    audio.volume = 0.45
+
+    const start = () => {
+      audio.muted = false
+      return audio
+        .play()
+        .then(() => {
+          setMuted(false)
+          return true
+        })
+        .catch(() => {
+          setMuted(true)
+          return false
+        })
+    }
+
+    const unlock = (event: Event) => {
+      const target = event.target
+      if (target instanceof Element && target.closest('[data-sound-toggle]')) return
+      void start().then((playing) => {
+        if (playing) window.removeEventListener('pointerdown', unlock)
+      })
+    }
+
+    window.addEventListener('pointerdown', unlock)
+    void start().then((playing) => {
+      if (playing) window.removeEventListener('pointerdown', unlock)
+    })
+
+    return () => window.removeEventListener('pointerdown', unlock)
+  }, [])
+
+  const toggle = () => {
+    const audio = audioRef.current
+    if (!audio) return
+    if (muted) {
+      audio.muted = false
+      void audio.play().then(() => setMuted(false)).catch(() => setMuted(true))
+      return
+    }
+    audio.muted = true
+    setMuted(true)
+  }
+
+  const Icon = muted ? VolumeX : Volume2
+
+  return (
+    <>
+      <audio
+        ref={audioRef}
+        src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/audio/i-want-it-that-way.mp3`}
+        preload="auto"
+        loop
+      />
+      <motion.button
+        type="button"
+        data-sound-toggle
+        onClick={toggle}
+        aria-label={muted ? t.unmute : t.mute}
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="fixed top-4 right-4 z-50 flex h-11 w-11 items-center justify-center rounded-full border border-white/90 bg-white/80 text-rose-400 shadow-[0_12px_32px_rgba(251,113,133,0.22)] backdrop-blur-md transition hover:text-rose-500"
+      >
+        <Icon className="h-5 w-5" strokeWidth={2.25} />
+      </motion.button>
+    </>
   )
 }
 
@@ -791,6 +873,7 @@ export default function Page() {
     <div className="w-full min-h-screen flex flex-col justify-center items-center relative overflow-x-hidden">
       <div className="noise fixed inset-0 z-30" />
       <LanguageSwitch lang={lang} onChange={setLang} />
+      <SoundToggle t={t} />
       <AnimatePresence mode="wait">
         <motion.div
           key={step}
