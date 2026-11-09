@@ -1,0 +1,66 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+:root {
+  --background: #fff5f5;
+  --foreground: #4a4a4a;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+button {
+  cursor: pointer;
+}
+
+.font-hand {
+  font-family: var(--font-hand), cursive;
+}
+
+.bg-blob {
+  filter: blur(80px);
+  opacity: 0.6;
+  z-index: 0;
+  border-radius: 50%;
+  animation: float 10s ease-in-out infinite alternate;
+  position: absolute;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0) scale(1);
+  }
+  to {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+}
+
+.noise {
+  opacity: 0.05;
+  background-image: var(--noise);
+  pointer-events: none;
+}
+
+.map-noise {
+  background-image: var(--map-noise);
+}
+
+.cream-noise {
+  background-image: var(--cream-noise);
+}
+
+.paper-bg {
+  background-image: var(--paper-bg);
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
