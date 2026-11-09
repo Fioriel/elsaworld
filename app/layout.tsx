@@ -21,7 +21,7 @@ const caveat = Caveat({
 export const metadata: Metadata = {
   title: 'Until We Meet Again',
   description: 'A little something I made just for you... because I miss you.',
-  icons: { icon: '/favicon.ico' },
+  icons: { icon: `${basePath}/favicon.ico` },
 }
 
 export default function RootLayout({
